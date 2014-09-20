@@ -104,6 +104,13 @@ extend(FormView.prototype, BBEvents, {
         });
     },
 
+    submit: function () {
+        // Call our submit-handler with a fake event object.
+        this.handleSubmit({
+            preventDefault: function () {}
+        });
+    },
+
     handleSubmit: function (e) {
         this.beforeSubmit();
         this.checkValid();
