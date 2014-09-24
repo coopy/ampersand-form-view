@@ -8,6 +8,8 @@ var AmpersandFormView = require('../ampersand-form-view');
 // Patch PhantomJS.
 if (!Function.prototype.bind) Function.prototype.bind = require('function-bind');
 
+var submitCount;
+
 var Model = AmpersandModel.extend({
     props: {
         text: 'string',
@@ -16,6 +18,8 @@ var Model = AmpersandModel.extend({
 });
 
 var getView = function () {
+    submitCount = 0;
+
     var FormView = AmpersandFormView.extend({
         fields: function () {
             return [
@@ -39,7 +43,10 @@ var getView = function () {
           this.renderWithTemplate();
           this.form = new FormView({
             el: this.queryByHook('test-form'),
-            model: this.model
+            model: this.model,
+            submitCallback: function () {
+                submitCount += 1;
+            }
           });
           this.registerSubview(this.form);
 
@@ -68,4 +75,10 @@ test('reset', function (t) {
     });
 
     t.end();
+});
+
+test('submit', function (t) {
+    var view = getView();
+    view.form.submit();
+    t.equal(submitCount, 1, 'submit handler should have been called');
 });
